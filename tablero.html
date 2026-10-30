@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tablero · Confianza y los cuatro acuerdos · 333</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1F6DB1;--azul-claro:#D1E3F6;--naranja:#E87722;--gris:#53565A;--verde:#8CC63F;
+  --bg:#FFFFFF;--surface:#F3F7FC;--line:#D1E3F6;--text:#22262B;--muted:#53565A;--accent:#1F6DB1;--on-accent:#FFFFFF;--soft:#D1E3F6;--soft-text:#1F6DB1;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17191C;--surface:#212429;--line:#33373D;--text:#F1F3F5;--muted:#B8BCC2;--accent:#5B9BD8;--on-accent:#FFFFFF;--soft:#1E3550;--soft-text:#D1E3F6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17191C;--surface:#212429;--line:#33373D;--text:#F1F3F5;--muted:#B8BCC2;--accent:#5B9BD8;--on-accent:#FFFFFF;--soft:#1E3550;--soft-text:#D1E3F6;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 28px 48px}
+#app{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:8px 36px;align-items:start}
+#app>h1,#app>.lead,#app>.kpis,#app>.note,#app>.reset,#app>.full,#app>.banner{grid-column:1/-1}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi b{font-size:36px}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:-6px 0 18px;flex-wrap:wrap}
+.tools button{border:1px solid var(--line);background:var(--surface);color:var(--text);font:600 13px 'Montserrat',sans-serif;border-radius:10px;padding:9px 14px;cursor:pointer}
+.tools button:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+.pbreak{grid-column:1/-1;break-before:page;height:0}
+@media print{:root{--bg:#FFFFFF;--surface:#F3F7FC;--line:#D1E3F6;--text:#22262B;--muted:#53565A;--accent:#1F6DB1;--soft:#D1E3F6;--soft-text:#1F6DB1}
+ header nav,.tools,.reset,#banner{display:none!important}.wrap{max-width:none;padding:0}
+ .sec,.kpi,.list li{break-inside:avoid}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.login{max-width:380px;margin:60px auto 0;grid-column:1/-1}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.logo{display:block;height:52px;width:auto;background:#FFFFFF;border-radius:8px;padding:3px 5px}
+.tabs{display:flex;background:var(--surface);border-radius:999px;padding:3px}
+.tabs button{border:0;background:transparent;color:var(--muted);font:600 12px 'Montserrat',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.prog{display:flex;gap:6px;margin-bottom:22px}
+.prog span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.prog span.on{background:var(--accent)}
+h1{font-size:30px;line-height:1.15;font-weight:800;margin:0 0 12px;letter-spacing:-.5px}
+h2{font-size:22px;line-height:1.25;font-weight:700;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 22px}
+.step-n{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px}
+input[type=text],textarea{width:100%;font:500 18px 'Montserrat',sans-serif;color:var(--text);background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:14px 16px;outline:none}
+textarea{font-size:16px;min-height:96px;resize:vertical}
+input:focus,textarea:focus{border-color:var(--accent)}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:16px;font:700 16px 'Montserrat',sans-serif;cursor:pointer;margin-top:18px;background:var(--accent);color:var(--on-accent)}
+.btn.go{background:var(--naranja);color:#FFFFFF}
+.btn.ok{background:var(--verde);color:#22262B}
+.btn:focus-visible,.opt:focus-visible,.tabs button:focus-visible,.dot:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+.err{color:var(--naranja);font-size:14px;font-weight:600;margin-top:8px;min-height:1px}
+.case{background:var(--surface);border-radius:16px;padding:18px;margin-bottom:16px}
+.case q{display:block;quotes:none;font-size:17px;font-weight:600;margin-bottom:12px;line-height:1.45}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:2px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:12px 14px;font:500 15px 'Montserrat',sans-serif;cursor:pointer}
+.opt.sel{border-color:var(--accent);background:var(--soft);color:var(--soft-text);font-weight:600}
+.opt.right{border-color:var(--verde)}
+.opt:disabled{cursor:default}
+.fb{margin-top:10px;font-size:14px;color:var(--muted);border-left:3px solid var(--verde);padding-left:10px}
+.fb.miss{border-color:var(--naranja)}
+.scale{display:flex;gap:8px;margin:6px 0 4px}
+.dot{flex:1;aspect-ratio:1;border-radius:14px;border:2px solid var(--line);background:var(--surface);font:800 22px 'Montserrat',sans-serif;color:var(--text);cursor:pointer}
+.dot.sel{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.scale-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.lbl{font-weight:600;margin:20px 0 8px;display:block}
+.done{text-align:center;padding-top:30px}
+.big3{font-size:64px;font-weight:800;color:var(--accent);line-height:1}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+/* resultados */
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.kpi{background:var(--surface);border-radius:14px;padding:14px}
+.kpi b{display:block;font-size:28px;font-weight:800;color:var(--accent);line-height:1.1}
+.kpi span{font-size:12px;color:var(--muted)}
+.sec{margin-bottom:26px}
+.sec h3{font-size:16px;font-weight:700;margin:0 0 10px}
+.cloud{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;background:var(--surface);border-radius:14px;padding:16px;min-height:70px}
+.cloud span{font-weight:700;color:var(--accent);line-height:1.1}
+.cloud span:nth-child(3n+2){color:var(--naranja)}
+.cloud span:nth-child(3n){color:var(--muted)}
+.bar{margin-bottom:10px}
+.bar .t{display:flex;justify-content:space-between;font-size:14px;gap:10px;margin-bottom:4px}
+.bar .t b{white-space:nowrap}
+.track{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:6px;transition:width .4s}
+.fill.o{background:var(--naranja)}
+.list{display:grid;gap:8px;padding:0;margin:0;list-style:none}
+.list li{background:var(--surface);border-radius:12px;padding:10px 14px;font-size:15px}
+.empty{color:var(--muted);font-size:14px}
+.reset{background:transparent;border:1px solid var(--line);color:var(--muted);font:600 13px 'Montserrat',sans-serif;border-radius:10px;padding:10px 14px;cursor:pointer;margin-top:10px}
+.banner{background:var(--soft);color:var(--soft-text);border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px}
+.tl{list-style:none;margin:0 0 8px;padding:0}
+.tl li{position:relative;padding:0 0 16px 22px;border-left:2px solid var(--line);margin-left:6px}
+.tl li:last-child{border-left-color:transparent;padding-bottom:4px}
+.tl li::before{content:"";position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.tl li.now::before{background:var(--naranja)}
+.tl li.pause::before{background:var(--line)}
+.tl b{display:block;font-size:15px}
+.tl span{font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{background:var(--soft);color:var(--soft-text);font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" alt="333" src="data:image/png;base64,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">
+    <nav class="tabs" aria-label="Vista" id="nav" hidden>
+      <button type="button" data-view="res" aria-pressed="true">En vivo</button>
+      <button type="button" data-view="tab" aria-pressed="false" id="tabBtn" hidden>Situaciones</button>
+      <button type="button" data-view="inf" aria-pressed="false" id="infBtn" hidden>Informe</button>
+    </nav>
+  </header>
+  <div class="tools" id="tools" hidden>
+    <button type="button" id="bPdf">Descargar PDF completo</button>
+    <button type="button" id="bResp">Excel respuestas</button>
+    <button type="button" id="bSit">Excel situaciones</button>
+  </div>
+  <div id="banner"></div>
+  <main id="app" aria-live="polite"></main>
+</div>
+
+<script src="config.js"></script>
+<script>
+const ACUERDOS=["Sé impecable con tus palabras","No te tomes nada personal","No hagas suposiciones","Hacé siempre lo máximo que puedas"];
+const CASOS=[
+ {t:"Le mandaste un mensaje a un compañero hace dos días y no te respondió.",ok:2,why:"Antes de imaginar el motivo, preguntá. Lo que no sabés, se consulta."},
+ {t:"Decís “lo tengo para el viernes” sabiendo que no vas a llegar.",ok:0,why:"Comprometerte solo con lo que podés cumplir es la base de la confianza."},
+ {t:"Tuviste un día complicado y el entregable te quedó a medias.",ok:3,why:"Lo máximo cambia según el día. Avisá a tiempo y dá lo mejor que tengas hoy."},
+ {t:"En la reunión cuestionan tu propuesta delante de todos.",ok:1,why:"Cuestionan la idea, no a vos. Escuchá el aporte sin ponerte a la defensiva."}
+];
+const TOTAL=6;
+let sits=[];let dTxt="";let dAc=[];let allSits=[];let filtro=null;let unsubS=null;
+const CFG=window.CCA_CONFIG||{};const SB_URL=CFG.url||"";const SB_KEY=CFG.key||"";
+const QS=new URLSearchParams(location.search);let CLAVE="";try{CLAVE=sessionStorage.getItem("cca-clave")||""}catch(e){}
+let uid=null;try{uid=localStorage.getItem("cca-token");if(!uid){uid=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2));localStorage.setItem("cca-token",uid)}}catch(e){uid=String(Date.now())+Math.random().toString(36).slice(2)}
+let online=true,isOwner=false;
+async function rpc(fn,args){const r=await fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+SB_KEY},body:JSON.stringify(args||{})});if(!r.ok)throw new Error(r.status);const t=await r.text();return t?JSON.parse(t):null}
+let me={paso:0,palabra:"",casos:[null,null,null,null],lider:null,liderTxt:"",termo:null,compromiso:"",necesidad:""};
+let view="res";
+let all=[];let unsub=null;let saving=Promise.resolve();
+const app=document.getElementById("app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function save(){
+  try{localStorage.setItem("cca-me",JSON.stringify(me))}catch(e){}
+  const body=JSON.parse(JSON.stringify(me));body.ts=Date.now();
+  saving=saving.then(()=>rpc("cca_guardar",{p_token:uid,p_data:body})).then(()=>{if(!online){online=true;setBanner("")}}).catch(()=>{online=false;setBanner("No se pudo guardar. Revisá la conexión: se reintenta en el próximo paso.")});
+  return saving;
+}
+function saveSits(){
+  try{localStorage.setItem("cca-sits",JSON.stringify(sits))}catch(e){}
+  saving=saving.then(()=>rpc("cca_situaciones_guardar",{p_token:uid,p_items:sits})).catch(()=>{online=false;setBanner("No se pudo guardar. Revisá la conexión.")});
+}
+function setBanner(t){document.getElementById("banner").innerHTML=t?`<div class="banner">${esc(t)}</div>`:""}
+
+function prog(){let h='<div class="prog" aria-hidden="true">';for(let i=1;i<TOTAL;i++)h+=`<span class="${me.paso>=i?"on":""}"></span>`;return h+"</div>"}
+
+function renderPart(){
+  const p=me.paso;let h="";
+  if(p===0){
+    h=`<h1>Confianza y los cuatro acuerdos</h1>
+    <p class="lead">Repasemos lo que trabajamos.</p>
+    <ol class="tl">
+      <li><b>Confianza</b><span>El pilar del equipo. Se construye cumpliendo lo que decimos y animándonos a decir lo que no funciona.</span></li>
+      <li><b>Los cuatro acuerdos</b><span>Sé impecable con tus palabras. No te tomes nada personal. No hagas suposiciones. Hacé siempre lo máximo que puedas.</span></li>
+      <li class="now"><b>Hoy</b><span>Los llevamos a situaciones reales del equipo.</span></li>
+    </ol>
+    <p class="note" style="margin-bottom:0">Son 20 minutos y tus respuestas son anónimas.</p>
+    <button class="btn go" data-act="start">Empezar</button>`;
+  }else if(p===1){
+    h=prog()+`<div class="step-n">Paso 1 de 5</div><h2>Confianza en una palabra</h2>
+    <p class="lead">¿Qué palabra la define para vos?</p>
+    <input type="text" id="palabra" maxlength="24" autocomplete="off" placeholder="Coherencia" value="${esc(me.palabra)}" aria-label="Tu palabra">
+    <div class="err" id="err"></div>
+    <button class="btn" data-act="p1">Enviar</button>`;
+  }else if(p===2){
+    h=prog()+`<div class="step-n">Paso 2 de 5</div><h2>Los cuatro acuerdos en acción</h2>
+    <p class="lead">¿Qué acuerdo aplica en cada situación?</p>`;
+    CASOS.forEach((c,i)=>{
+      const a=me.casos[i];
+      h+=`<div class="case"><q>${esc(c.t)}</q><div class="opts">`;
+      ACUERDOS.forEach((ac,j)=>{
+        const cls=a===null?"":(j===a?"sel":"")+(j===c.ok?" right":"");
+        h+=`<button class="opt ${cls}" data-act="caso" data-i="${i}" data-j="${j}" ${a!==null?"disabled":""}>${esc(ac)}</button>`;
+      });
+      h+="</div>";
+      if(a!==null)h+=`<div class="fb ${a===c.ok?"":"miss"}">${a===c.ok?"Bien visto. ":"Aplica «"+esc(ACUERDOS[c.ok])+"». "}${esc(c.why)}</div>`;
+      h+="</div>";
+    });
+    h+=`<div class="err" id="err"></div><button class="btn" data-act="p2">Continuar</button>`;
+  }else if(p===3){
+    h=prog()+`<div class="step-n">Paso 3 de 5</div><h2>¿Cuándo perdemos la confianza?</h2>
+    <p class="lead">Contá una situación real del equipo, sin nombres, y marcá qué acuerdos la hubieran evitado. Solo la ve quien facilita.</p>`;
+    if(sits.length){h+=`<ul class="list" style="margin-bottom:16px">`;sits.forEach((x,i)=>{h+=`<li><div>${esc(x.texto)}</div><div class="note" style="margin-top:4px">${x.acuerdos.map(a=>esc(ACUERDOS[a])).join(" / ")}</div><button class="reset" style="margin-top:6px;padding:6px 10px" data-act="sitDel" data-i="${i}">Quitar</button></li>`});h+=`</ul>`}
+    if(sits.length<3){
+      h+=`<label class="lbl" for="sitTxt" style="margin-top:0">${sits.length?"Otra situación (opcional)":"Situación"}</label>
+      <textarea id="sitTxt" maxlength="240" placeholder="Cuando cambian una prioridad y nos enteramos tarde">${esc(dTxt)}</textarea>
+      <span class="lbl">¿Qué acuerdos la evitarían?</span><div class="opts">`;
+      ACUERDOS.forEach((ac,j)=>{const on=dAc.includes(j);h+=`<button class="opt ${on?"sel":""}" data-act="sitAc" data-j="${j}" aria-pressed="${on}">${esc(ac)}</button>`});
+      h+=`</div><button class="btn" style="background:var(--soft);color:var(--soft-text)" data-act="sitAdd">Agregar situación</button>`;
+    }
+    h+=`<div class="err" id="err"></div><button class="btn" data-act="p3s">Continuar</button>`;
+  }else if(p===4){
+    h=prog()+`<div class="step-n">Paso 4 de 5</div><h2>Puente a liderazgo</h2>
+    <p class="lead">Liderar es dar el ejemplo, con o sin cargo. ¿Qué acuerdo necesitás que un líder modele primero?</p><div class="opts">`;
+    ACUERDOS.forEach((ac,j)=>{h+=`<button class="opt ${me.lider===j?"sel":""}" data-act="lider" data-j="${j}" aria-pressed="${me.lider===j}">${esc(ac)}</button>`});
+    h+=`</div><label class="lbl" for="liderTxt">¿Qué hace un líder para generar confianza? (opcional)</label>
+    <input type="text" id="liderTxt" maxlength="120" placeholder="Cumple lo que promete" value="${esc(me.liderTxt)}">
+    <div class="err" id="err"></div><button class="btn" data-act="p3">Continuar</button>`;
+  }else if(p===5){
+    h=prog()+`<div class="step-n">Paso 5 de 5</div><h2>Termómetro de confianza</h2>
+    <p class="lead">Hoy, ¿cuánta confianza hay en el equipo?</p><div class="scale" role="group" aria-label="Del 1 al 5">`;
+    for(let n=1;n<=5;n++)h+=`<button class="dot ${me.termo===n?"sel":""}" data-act="termo" data-n="${n}" aria-pressed="${me.termo===n}">${n}</button>`;
+    h+=`</div><div class="scale-l"><span>Poca</span><span>Mucha</span></div>
+    <label class="lbl" for="comp">Mi compromiso para los próximos 30 días</label>
+    <textarea id="comp" maxlength="160" placeholder="Si no voy a llegar con un plazo, aviso antes">${esc(me.compromiso)}</textarea>
+    <label class="lbl" for="nec">¿Qué necesitás antes de fin de año para trabajar mejor?</label>
+    <textarea id="nec" maxlength="240" placeholder="Que las prioridades se definan antes de cada semana">${esc(me.necesidad)}</textarea>
+    <p class="note" style="margin-top:6px">Esta respuesta solo la ve quien facilita.</p>
+    <div class="err" id="err"></div><button class="btn ok" data-act="p4">Finalizar</button>`;
+  }else{
+    const ok=me.casos.filter((a,i)=>a===CASOS[i].ok).length;
+    h=`<div class="done"><div class="big3">${ok}/4</div><h2 style="margin-top:12px">Gracias por participar</h2>
+    <p class="lead">Acertaste ${ok} de 4 situaciones. Tu compromiso quedó registrado: lo retomamos en el 1 a 1.</p></div>
+    <section style="margin-top:10px"><h2>Nuestras ground rules</h2><p class="lead">Las llevamos al Experience.</p>
+    <ol class="tl">
+      <li><b>Siempre doy mi 100% y hago mi trabajo con excelencia.</b><span>Hacé siempre lo máximo que puedas</span></li>
+      <li><b>Una vez que se toma una decisión, la apoyo al 100%.</b><span>Sé impecable con tus palabras</span></li>
+      <li><b>Asumo riesgos y animo a otros a arriesgarse.</b><span>Confianza</span></li>
+      <li><b>Resuelvo problemas con la persona responsable, con apertura y honestidad.</b><span>No te tomes nada personal</span></li>
+      <li><b>No planteo problemas sin ofrecer posibles soluciones.</b><span>Hacé siempre lo máximo que puedas</span></li>
+      <li><b>Ante la duda o confusión, me aseguro de entenderte por completo.</b><span>No hagas suposiciones</span></li>
+    </ol></section>
+    <button class="btn" data-act="verres">Ver resultados del equipo</button>`;
+  }
+  app.innerHTML=h;
+  const f=app.querySelector("input,textarea");if(f&&p>0&&p!==2&&p!==3)f.focus({preventScroll:true});
+}
+function err(t){const e=document.getElementById("err");if(e)e.textContent=t}
+
+app.addEventListener("input",()=>err(""));
+app.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="clave"){const b=app.querySelector('[data-act="login"]');if(b)b.click()}});
+app.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+  if(a==="start"){me.paso=1;save();renderPart()}
+  else if(a==="p1"){const v=document.getElementById("palabra").value.trim().split(/\s+/)[0]||"";if(!v){err("Escribí una palabra para seguir.");return}me.palabra=v;me.paso=2;save();renderPart();scrollTo(0,0)}
+  else if(a==="caso"){me.casos[+b.dataset.i]=+b.dataset.j;save();const y=scrollY;renderPart();scrollTo(0,y)}
+  else if(a==="p2"){if(me.casos.some(x=>x===null)){err("Respondé las cuatro situaciones para seguir.");return}me.paso=3;save();renderPart();scrollTo(0,0)}
+  else if(a==="sitAc"){dTxt=document.getElementById("sitTxt").value;const j=+b.dataset.j;dAc=dAc.includes(j)?dAc.filter(x=>x!==j):[...dAc,j].sort();const y=scrollY;renderPart();scrollTo(0,y)}
+  else if(a==="sitAdd"){const t=document.getElementById("sitTxt").value.trim();if(!t){err("Describí la situación.");return}if(!dAc.length){err("Marcá al menos un acuerdo.");return}sits.push({texto:t,acuerdos:dAc});dTxt="";dAc=[];saveSits();renderPart()}
+  else if(a==="sitDel"){sits.splice(+b.dataset.i,1);saveSits();renderPart()}
+  else if(a==="p3s"){const el=document.getElementById("sitTxt");const t=el?el.value.trim():"";if(t&&dAc.length){sits.push({texto:t,acuerdos:dAc});dTxt="";dAc=[];saveSits()}else if(t){dTxt=t;err("Marcá qué acuerdos evitarían esa situación, o borrá el texto.");return}if(!sits.length){err("Contá al menos una situación para seguir.");return}me.paso=4;save();renderPart();scrollTo(0,0)}
+  else if(a==="filtro"){filtro=b.dataset.j===""?null:+b.dataset.j;renderTab()}
+  else if(a==="lider"){me.lider=+b.dataset.j;me.liderTxt=document.getElementById("liderTxt").value;renderPart()}
+  else if(a==="p3"){if(me.lider===null){err("Elegí un acuerdo para seguir.");return}me.liderTxt=document.getElementById("liderTxt").value.trim();me.paso=5;save();renderPart();scrollTo(0,0)}
+  else if(a==="termo"){me.termo=+b.dataset.n;me.compromiso=document.getElementById("comp").value;me.necesidad=document.getElementById("nec").value;renderPart()}
+  else if(a==="p4"){const c=document.getElementById("comp").value.trim();if(!me.termo){err("Elegí un valor del 1 al 5.");return}if(!c){err("Escribí tu compromiso para finalizar.");return}const nd=document.getElementById("nec").value.trim();if(!nd){err("Contanos qué necesitás antes de fin de año.");return}me.necesidad=nd;me.compromiso=c;me.paso=6;save();renderPart();scrollTo(0,0)}
+  else if(a==="verres"){setView("res")}
+  else if(a==="reset"){resetAll()}
+  else if(a==="retry"){renderLogin();login("")}
+});
+
+function bar(label,val,max,suffix,orange){const pct=max?Math.round(val/max*100):0;return `<div class="bar"><div class="t"><span>${esc(label)}</span><b>${suffix}</b></div><div class="track"><div class="fill ${orange?"o":""}" style="width:${pct}%"></div></div></div>`}
+
+function renderRes(){
+  const rows=all.filter(r=>r&&r.paso>=1);
+  let h="";
+  const fin=rows.filter(r=>r.paso>=6).length;
+  const termos=rows.map(r=>r.termo).filter(n=>typeof n==="number");
+  const avg=termos.length?(termos.reduce((a,b)=>a+b,0)/termos.length).toFixed(1):"–";
+  let aciertos=0,resp=0;rows.forEach(r=>(r.casos||[]).forEach((a,i)=>{if(a!==null&&a!==undefined){resp++;if(a===CASOS[i].ok)aciertos++}}));
+  h+=`<div class="kpis"><div class="kpi"><b>${rows.length}</b><span>participan</span></div><div class="kpi"><b>${resp?Math.round(aciertos/resp*100):0}%</b><span>aciertos</span></div><div class="kpi"><b>${avg}</b><span>confianza / 5</span></div></div>`;
+
+  const freq={};rows.forEach(r=>{const w=(r.palabra||"").toLowerCase().trim();if(w)freq[w]=(freq[w]||0)+1});
+  const words=Object.entries(freq).sort((a,b)=>b[1]-a[1]);const mx=words.length?words[0][1]:1;
+  h+=`<section class="sec"><h3>Confianza en una palabra</h3><div class="cloud">${words.length?words.map(([w,n])=>`<span style="font-size:${16+Math.round(n/mx*24)}px">${esc(w)}</span>`).join(""):'<span class="empty" style="color:var(--muted);font-weight:500;font-size:14px">Las palabras aparecen acá a medida que respondan.</span>'}</div></section>`;
+
+  h+=`<section class="sec"><h3>Aciertos por situación</h3>`;
+  CASOS.forEach((c,i)=>{const an=rows.map(r=>(r.casos||[])[i]).filter(a=>a!==null&&a!==undefined);const ok=an.filter(a=>a===c.ok).length;const pct=an.length?Math.round(ok/an.length*100):0;h+=bar(ACUERDOS[c.ok],pct,100,`${pct}%`,pct<60)});
+  h+=`</section>`;
+
+  const lv=[0,0,0,0];rows.forEach(r=>{if(typeof r.lider==="number")lv[r.lider]++});const lmax=Math.max(1,...lv);
+  h+=`<section class="sec"><h3>Lo que un líder tiene que modelar primero</h3>`;
+  ACUERDOS.forEach((a,j)=>h+=bar(a,lv[j],lmax,lv[j]));
+  const frases=rows.map(r=>r.liderTxt).filter(Boolean);
+  if(frases.length)h+=`<ul class="list" style="margin-top:12px">${frases.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>`;
+  h+=`</section>`;
+
+  const dist=[0,0,0,0,0];termos.forEach(n=>dist[n-1]++);const dmax=Math.max(1,...dist);
+  h+=`<section class="sec"><h3>Termómetro de confianza</h3>`;
+  for(let n=5;n>=1;n--)h+=bar(String(n),dist[n-1],dmax,dist[n-1],n<=2);
+  h+=`</section>`;
+
+  const comps=rows.map(r=>r.compromiso).filter(Boolean);
+  h+=`<section class="sec"><h3>Compromisos (${comps.length})</h3>${comps.length?`<ul class="list">${comps.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`:'<p class="empty">Aparecen cuando cada persona finaliza.</p>'}</section>`;
+  
+  h+=`<p class="note">${fin} de ${rows.length} finalizaron. Se actualiza en vivo.</p>`;
+  app.innerHTML=h;
+}
+
+function renderTab(){
+  if(!isOwner){app.innerHTML='<p class="empty">El tablero lo ve solo quien organiza la actividad.</p>';return}
+  const items=[];allSits.forEach(d=>(d.items||[]).forEach(x=>items.push(x)));
+  const cnt=[0,0,0,0];items.forEach(x=>(x.acuerdos||[]).forEach(a=>cnt[a]++));
+  const cmax=Math.max(1,...cnt);const top=items.length?cnt.indexOf(Math.max(...cnt)):-1;
+  let h=`<div class="kpis"><div class="kpi"><b>${items.length}</b><span>situaciones</span></div><div class="kpi"><b>${allSits.filter(d=>(d.items||[]).length).length}</b><span>personas aportaron</span></div><div class="kpi"><b style="font-size:15px;line-height:1.3">${top>=0?esc(ACUERDOS[top]):"–"}</b><span>acuerdo más necesario</span></div></div>`;
+  h+=`<section class="sec"><h3>Qué acuerdo evitaría cada pérdida de confianza</h3>`;
+  ACUERDOS.forEach((a,j)=>h+=bar(a,cnt[j],cmax,cnt[j],j===top));
+  h+=`</section><section class="sec"><h3>Situaciones reportadas</h3><div class="opts" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-bottom:12px">`;
+  h+=`<button class="opt ${filtro===null?"sel":""}" data-act="filtro" data-j="">Todas</button>`;
+  ACUERDOS.forEach((a,j)=>h+=`<button class="opt ${filtro===j?"sel":""}" data-act="filtro" data-j="${j}" style="font-size:13px">${esc(a)}</button>`);
+  h+=`</div>`;
+  const vis=filtro===null?items:items.filter(x=>(x.acuerdos||[]).includes(filtro));
+  h+=vis.length?`<ul class="list">${vis.map(x=>`<li><div>${esc(x.texto)}</div><div class="note" style="margin-top:4px">${(x.acuerdos||[]).map(a=>esc(ACUERDOS[a])).join(" / ")}</div></li>`).join("")}</ul>`:'<p class="empty">Las situaciones aparecen acá a medida que el equipo responde.</p>';
+  const necs=all.map(r=>r.necesidad).filter(Boolean);
+  h+=`</section><section class="sec"><h3>Lo que necesitan antes de fin de año (${necs.length})</h3>${necs.length?`<ul class="list">${necs.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:'<p class="empty">Aparece cuando cada persona finaliza.</p>'}</section><p class="note">Visible solo para vos. Se actualiza en vivo.</p>`;
+  app.innerHTML=h;
+}
+
+async function resetAll(){
+  if(!isOwner||!confirm("¿Borrar todas las respuestas? No se puede deshacer."))return;
+  try{await rpc("cca_reset",{p_clave:CLAVE});all=[];allSits=[];render()}catch(e){alert("No se pudo borrar. Probá de nuevo.")}
+}
+
+function renderInf(){
+  if(!isOwner){app.innerHTML='<p class="empty">El informe lo ve solo quien organiza la actividad.</p>';return}
+  const rows=all.filter(r=>r&&r.paso>=1);
+  const termos=rows.map(r=>r.termo).filter(n=>typeof n==="number");
+  const avg=termos.length?(termos.reduce((a,b)=>a+b,0)/termos.length).toFixed(1):"–";
+  let ac=0,rs=0;rows.forEach(r=>(r.casos||[]).forEach((a,i)=>{if(a!==null&&a!==undefined){rs++;if(a===CASOS[i].ok)ac++}}));
+  const items=[];allSits.forEach(d=>(d.items||[]).forEach(x=>items.push(x)));
+  const cnt=[0,0,0,0];items.forEach(x=>(x.acuerdos||[]).forEach(a=>cnt[a]++));const top=items.length?cnt.indexOf(Math.max(...cnt)):-1;
+  const lv=[0,0,0,0];rows.forEach(r=>{if(typeof r.lider==="number")lv[r.lider]++});const ltop=rows.some(r=>typeof r.lider==="number")?lv.indexOf(Math.max(...lv)):-1;
+  let h=`<h1 style="font-size:26px">Programa de team building</h1><p class="lead">Informe para dirección. Equipo LATAM, Argentina y Brasil.</p>`;
+  h+=`<section class="sec"><h3>Recorrido</h3><ol class="tl">
+  <li><b>Sesión 2 · Equipo uno</b><span>Valores elegidos: compromiso, confianza y pasión. La comunicación aparece como primera debilidad.</span></li>
+  <li><b>Sesión 3 · Equipos con futuro</b><span>21 participantes. Refuerzo de la visión anual. Pedidos del equipo: roles claros, cumplir tiempos, aceptar errores en positivo.</span></li>
+  <li><b>Sesión 4 · Entrenamiento invisible</b><span>Integración plena de Brasil y Argentina. El programa pasa a Desarrollo de Personas, con evaluación pre y post.</span></li>
+  <li><b>Sesión 5 · Confianza</b><span>Confirmada como el tema clave a trabajar.</span></li>
+  <li><b>Sesión 6 · Los cuatro acuerdos</b><span>Se decide incorporarlos al onboarding junto a las ground rules.</span></li>
+  <li class="pause"><b>Sesión 7 · Cápsulas de liderazgo</b><span>En pausa para reforzar conceptos clave antes de avanzar.</span></li>
+  <li class="now"><b>Sesión de refuerzo</b><span>Confianza y cuatro acuerdos en la práctica, con medición.</span></li></ol></section>`;
+  h+=`<section class="sec"><h3>Diagnóstico del equipo</h3><div class="chips"><span>Sociabilidad alta</span><span>Asertividad baja</span><span>Tolerancia alta: se aguanta sin decir</span><span>Bajo apego a las reglas</span><span>Rotación alta</span><span>Comunicación a mejorar</span></div></section>`;
+  h+=`<section class="sec"><h3>Resultados de la sesión de refuerzo</h3><div class="kpis"><div class="kpi"><b>${rows.length}</b><span>participantes</span></div><div class="kpi"><b>${rs?Math.round(ac/rs*100):0}%</b><span>aplican bien los acuerdos</span></div><div class="kpi"><b>${avg}</b><span>confianza percibida / 5</span></div></div>`;
+  h+=`<ul class="list"><li>Acuerdo que más evitaría pérdidas de confianza: <b>${top>=0?esc(ACUERDOS[top]):"sin datos aún"}</b> (${items.length} situaciones reportadas)</li><li>Necesidades planteadas para fin de año: <b>${rows.filter(r=>r.necesidad).length}</b> (detalle en Situaciones)</li><li>Acuerdo que el equipo pide que los líderes modelen primero: <b>${ltop>=0?esc(ACUERDOS[ltop]):"sin datos aún"}</b></li></ul></section>`;
+  h+=`<section class="sec"><h3>Decisiones y próximos pasos</h3><ul class="list"><li>Cuatro acuerdos y ground rules dentro del onboarding.</li><li>Entrevistas de egreso para entender la rotación.</li><li>Definición de roles y responsabilidades con 1 a 1.</li><li>Seguimiento a 30 días de los compromisos individuales.</li><li>Retomar la cápsula de liderazgo con lo que el equipo pidió.</li><li>Propuesta del equipo: taller de innovación de procesos.</li></ul></section><p class="note">Visible solo para vos. Los resultados se actualizan en vivo.</p>`;
+  app.innerHTML=h;
+}
+function fecha(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function csv(name,head,rows){
+  const q=v=>{v=v==null?"":String(v);return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const txt="\ufeff"+[head,...rows].map(r=>r.map(q).join(";")).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=name+"-"+fecha()+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+}
+const ac=i=>typeof i==="number"&&ACUERDOS[i]?ACUERDOS[i]:"";
+document.getElementById("bResp").addEventListener("click",()=>{
+  const head=["Participante","Palabra"];CASOS.forEach((c,i)=>head.push("Caso "+(i+1)+" elegido","Caso "+(i+1)+" correcto"));
+  head.push("Acuerdo que debe modelar un líder","Qué hace un líder para generar confianza","Termómetro (1-5)","Compromiso","Necesidad antes de fin de año");
+  const rows=all.filter(r=>r&&r.paso>=1).map((r,k)=>{const x=["P"+(k+1),r.palabra||""];CASOS.forEach((c,i)=>{const v=(r.casos||[])[i];x.push(ac(v),v==null?"":(v===c.ok?"Sí":"No"))});x.push(ac(r.lider),r.liderTxt||"",r.termo||"",r.compromiso||"",r.necesidad||"");return x});
+  csv("confianza-respuestas",head,rows);
+});
+document.getElementById("bSit").addEventListener("click",()=>{
+  const rows=[];allSits.forEach((d,k)=>(d.items||[]).forEach(x=>rows.push(["P"+(k+1),x.texto||"",(x.acuerdos||[]).map(ac).join(" / ")].concat(ACUERDOS.map((a,j)=>(x.acuerdos||[]).includes(j)?"1":"0")))));
+  csv("confianza-situaciones",["Aporte","Situación","Acuerdos que la evitarían"].concat(ACUERDOS),rows);
+});
+document.getElementById("bPdf").addEventListener("click",()=>{
+  const v=view;let h="";
+  renderInf();h+=app.innerHTML;renderRes();h+='<div class="pbreak"></div><h1>Resultados de la sesión</h1>'+app.innerHTML;renderTab();h+='<div class="pbreak"></div><h1>Situaciones y necesidades</h1>'+app.innerHTML;
+  app.innerHTML=h;document.title="Confianza y los cuatro acuerdos - "+fecha();
+  setTimeout(()=>{window.print();document.title="Tablero · Confianza y los cuatro acuerdos · 333";view=v;render()},300);
+});
+function renderLogin(msg){app.innerHTML=`<div class="login"><h2>Tablero</h2><p class="lead">${esc(msg||"Cargando resultados…")}</p>${msg?`<button class="btn" data-act="retry">Reintentar</button>`:""}</div>`}
+async function login(c){try{const t=await rpc("cca_tablero");if(t){CLAVE=c;try{sessionStorage.setItem("cca-clave",c)}catch(e){}isOwner=true;all=t.respuestas||[];allSits=t.situaciones||[];document.getElementById("nav").hidden=false;document.getElementById("tools").hidden=false;document.getElementById("tabBtn").hidden=false;document.getElementById("infBtn").hidden=false;render();return true}}catch(e){renderLogin("No se pudo conectar. Probá de nuevo.");return false}renderLogin("No se pudieron cargar los datos.");return false}
+function render(){if(!isOwner){renderLogin();return}view==="res"?renderRes():view==="tab"?renderTab():view==="inf"?renderInf():renderPart()}
+function setView(v){view=v;document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.view===v)));scrollTo(0,0);render()}
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setView(b.dataset.view)});
+
+try{const s2=null&&JSON.parse(localStorage.getItem("cca-sits")||"null");if(Array.isArray(s2))sits=s2}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("cca-me")||"null");if(s&&typeof s.paso==="number")me=Object.assign(me,s)}catch(e){}
+setView(view);
+
+async function pull(){
+  try{
+    if(isOwner){const t=await rpc("cca_tablero");if(t){all=t.respuestas||[];allSits=t.situaciones||[]}}
+    else if(view==="res"){all=(await rpc("cca_resultados"))||[]}
+    if(view==="res")renderRes();else if(view==="tab")renderTab();else if(view==="inf")renderInf();
+  }catch(e){}
+}
+(async()=>{
+  await login("");
+  setInterval(()=>{if(isOwner&&!document.hidden)pull()},5000);
+})();
+document.querySelector(".tabs").addEventListener("click",()=>{if(view!=="part")pull()});
+</script>
+</body>
+</html>
